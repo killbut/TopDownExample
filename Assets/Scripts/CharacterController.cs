@@ -1,15 +1,15 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class PlayerMovement : MonoBehaviour
+public class CharacterController : MonoBehaviour
 {
     [SerializeField] private float _speed;
-
+    [SerializeField] private Transform _firePosition;
     private Rigidbody2D _rigidbody2D;
     private Vector2 _movementVector;
     private Camera _camera;
     private Vector2 _mousePosition;
-
+    
     protected void Awake()
     {
         _rigidbody2D = GetComponent<Rigidbody2D>();
@@ -18,6 +18,11 @@ public class PlayerMovement : MonoBehaviour
 
     protected void Update()
     {
+        if (Input.GetMouseButtonDown(0))
+        {
+           Debug.Log("Player Shoot");
+           EventBus.RaiseEvent<IBulletPoolObjectHandler>(x=>x.ShootBullet(_firePosition));
+        }
         GetInputPosition();
         _mousePosition = _camera.ScreenToWorldPoint(Input.mousePosition);
     }
@@ -44,4 +49,6 @@ public class PlayerMovement : MonoBehaviour
         float angle = Mathf.Atan2(lookingDirection.y, lookingDirection.x) * Mathf.Rad2Deg - 90f;
         _rigidbody2D.rotation = angle;
     }
+
+
 }
