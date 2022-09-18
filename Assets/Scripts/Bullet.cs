@@ -1,5 +1,6 @@
-﻿using System;
+﻿using UnityEditor;
 using UnityEngine;
+using Vector2 = UnityEngine.Vector2;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Bullet : MonoBehaviour
@@ -7,32 +8,51 @@ public class Bullet : MonoBehaviour
     [SerializeField] private float _speed = 1f;
 
     private Rigidbody2D _rigidbody2D;
+    private Vector2 _lastFrameVelocity;
     public Rigidbody2D Rigidbody2D => _rigidbody2D;
     public float Speed => _speed;
+
     protected void Awake()
     {
         _rigidbody2D = gameObject.GetComponent<Rigidbody2D>();
-        Debug.Log("Bullet initialization");
-    }
-    protected void OnEnable()
-    {
-        
     }
 
-    protected void OnDisable()
+    private void Update()
     {
-        
+        _lastFrameVelocity = _rigidbody2D.velocity;
     }
 
     private void OnCollisionEnter2D(Collision2D col)
     {
-        Debug.Log("OnCollisionEnter2D");
+        if (col.gameObject.CompareTag("Wall"))
+        {
+            ReflectBullet(col.GetContact(0).normal);
+        }
+        else
+        {
+            EventBus.RaiseEvent<IPlayer>(x=>x.Dead());
+        }
     }
 
     protected void OnBecameInvisible()
     {
-        Debug.Log("OnBecameInvisible");
-        EventBus.RaiseEvent<IBulletPoolObjectHandler>(x=>x.DeactivateBullet(this.gameObject));
+        this.gameObject.SetActive(false);
     }
-    
+
+    public void Shot(Transform firePosition)
+    {
+        transform.position = firePosition.position;
+        transform.rotation = firePosition.rotation;
+        //_rigidbody2D.velocity = new Vector2(firePosition.up.x * Speed, firePosition.up.y * Speed);
+        _rigidbody2D.AddForce(firePosition.up * Speed, ForceMode2D.Impulse);
+    }
+
+    private void ReflectBullet(Vector2 inNormal)
+    {
+        var newDirection = Vector2.Reflect(_lastFrameVelocity.normalized, inNormal);
+        _rigidbody2D.velocity = newDirection * _speed;
+        var angle = Mathf.Atan2(newDirection.y, newDirection.x) * Mathf.Rad2Deg - 90f;
+        _rigidbody2D.rotation = angle;
+        //EditorApplication.isPaused = true;
+    }
 }

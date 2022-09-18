@@ -26,17 +26,9 @@ public class BulletPool : MonoBehaviour, IBulletPoolObjectHandler
           _bulletPoolObject = new PoolObject<Bullet>(_prefab, _needAutoExpand, _container, _startSize);
      }
      
-     public void DeactivateBullet(GameObject bullet)
+     public void Shot(Transform firePosition)
      {
-          bullet.SetActive(false);
-     }
-
-     public void ShootBullet(Transform firePosition)
-     {
-          var bullet = _bulletPoolObject.GetFreeObject();
-          var bulletTransform = bullet.transform;
-          bulletTransform.position = firePosition.position;
-          bulletTransform.rotation = firePosition.rotation;
-          bullet.Rigidbody2D.AddForce(firePosition.up * bullet.Speed, ForceMode2D.Impulse);
+          var bullet = _bulletPoolObject.GetFreeObject(); 
+          bullet.Shot(firePosition);
      }
 }

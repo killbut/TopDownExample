@@ -2,6 +2,5 @@
 
 public interface IBulletPoolObjectHandler : IGlobalSubscriber
 {
-    void DeactivateBullet(GameObject bullet);
-    void ShootBullet(Transform firePosition);
+    void Shot(Transform firePosition);
 }

@@ -1,28 +1,30 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class CharacterController : MonoBehaviour
+public class CharacterController : MonoBehaviour 
 {
     [SerializeField] private float _speed;
     [SerializeField] private Transform _firePosition;
+
     private Rigidbody2D _rigidbody2D;
     private Vector2 _movementVector;
     private Camera _camera;
     private Vector2 _mousePosition;
-    
+
     protected void Awake()
     {
         _rigidbody2D = GetComponent<Rigidbody2D>();
         _camera = Camera.main;
     }
-
+    
     protected void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
-           Debug.Log("Player Shoot");
-           EventBus.RaiseEvent<IBulletPoolObjectHandler>(x=>x.ShootBullet(_firePosition));
+            EventBus.RaiseEvent<IBulletPoolObjectHandler>(x => x.Shot(_firePosition));
         }
+
         GetInputPosition();
         _mousePosition = _camera.ScreenToWorldPoint(Input.mousePosition);
     }
@@ -50,5 +52,13 @@ public class CharacterController : MonoBehaviour
         _rigidbody2D.rotation = angle;
     }
 
+    public void Dead()
+    {
+        gameObject.SetActive(false);
+    }
 
+    public void Win()
+    {
+        throw new System.NotImplementedException();
+    }
 }
