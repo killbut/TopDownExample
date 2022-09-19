@@ -2,5 +2,5 @@
 
 public interface IBulletPoolObjectHandler : IGlobalSubscriber
 {
-    void Shot(Transform firePosition);
+    void TakeFreeBullet(Transform firePosition);
 }

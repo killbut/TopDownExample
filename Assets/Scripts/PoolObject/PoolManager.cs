@@ -1,7 +1,6 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class BulletPool : MonoBehaviour, IBulletPoolObjectHandler
+public class PoolManager : MonoBehaviour, IBulletPoolObjectHandler
 {
      [SerializeField] private Bullet _prefab;
      [SerializeField] private int _startSize = 10;
@@ -26,7 +25,7 @@ public class BulletPool : MonoBehaviour, IBulletPoolObjectHandler
           _bulletPoolObject = new PoolObject<Bullet>(_prefab, _needAutoExpand, _container, _startSize);
      }
      
-     public void Shot(Transform firePosition)
+     public void TakeFreeBullet(Transform firePosition)
      {
           var bullet = _bulletPoolObject.GetFreeObject(); 
           bullet.Shot(firePosition);

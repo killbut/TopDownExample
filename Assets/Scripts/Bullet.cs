@@ -1,5 +1,4 @@
-﻿using UnityEditor;
-using UnityEngine;
+﻿using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -25,13 +24,7 @@ public class Bullet : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D col)
     {
         if (col.gameObject.CompareTag("Wall"))
-        {
             ReflectBullet(col.GetContact(0).normal);
-        }
-        else
-        {
-            EventBus.RaiseEvent<IPlayer>(x=>x.Dead());
-        }
     }
 
     protected void OnBecameInvisible()
@@ -43,16 +36,15 @@ public class Bullet : MonoBehaviour
     {
         transform.position = firePosition.position;
         transform.rotation = firePosition.rotation;
-        //_rigidbody2D.velocity = new Vector2(firePosition.up.x * Speed, firePosition.up.y * Speed);
         _rigidbody2D.AddForce(firePosition.up * Speed, ForceMode2D.Impulse);
     }
 
     private void ReflectBullet(Vector2 inNormal)
     {
         var newDirection = Vector2.Reflect(_lastFrameVelocity.normalized, inNormal);
-        _rigidbody2D.velocity = newDirection * _speed;
         var angle = Mathf.Atan2(newDirection.y, newDirection.x) * Mathf.Rad2Deg - 90f;
+        _rigidbody2D.velocity = newDirection * _speed;
         _rigidbody2D.rotation = angle;
-        //EditorApplication.isPaused = true;
     }
+    
 }

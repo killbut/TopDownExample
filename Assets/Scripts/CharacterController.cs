@@ -22,9 +22,13 @@ public class CharacterController : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            EventBus.RaiseEvent<IBulletPoolObjectHandler>(x => x.Shot(_firePosition));
+            EventBus.RaiseEvent<IBulletPoolObjectHandler>(x => x.TakeFreeBullet(_firePosition));
         }
 
+        if (Input.GetMouseButton(1))
+        {
+            
+        }
         GetInputPosition();
         _mousePosition = _camera.ScreenToWorldPoint(Input.mousePosition);
     }
@@ -51,14 +55,5 @@ public class CharacterController : MonoBehaviour
         float angle = Mathf.Atan2(lookingDirection.y, lookingDirection.x) * Mathf.Rad2Deg - 90f;
         _rigidbody2D.rotation = angle;
     }
-
-    public void Dead()
-    {
-        gameObject.SetActive(false);
-    }
-
-    public void Win()
-    {
-        throw new System.NotImplementedException();
-    }
+    
 }
