@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEditor;
 using UnityEngine;
 
 public class BulletTrajectoryRender : MonoBehaviour
@@ -6,7 +7,7 @@ public class BulletTrajectoryRender : MonoBehaviour
     [SerializeField] private Transform _startTransform;
     
     private LineRenderer _lineRenderer;
-    private int _maxCountReflect = 25;
+    private int _maxCountReflect = 10;
     private Vector3[] _pointsReflect;
     private void Start()
     {
@@ -38,10 +39,12 @@ public class BulletTrajectoryRender : MonoBehaviour
             _pointsReflect[count] = ray.origin;
             count++;
             // TODO fix delta
-            ray.origin = hit.point - ray.direction.normalized;
-            
+
+
             ray.direction = Vector2.Reflect(ray.direction, hit.normal);
+            ray.origin = hit.point + ray.direction * 0.1f;
             ReflectRay(ray.origin,ray.direction ,count);
         }
+        //EditorApplication.isPaused = true;
     }
 }
