@@ -1,16 +1,18 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using Vector2 = UnityEngine.Vector2;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Bullet : MonoBehaviour
 {
-    [SerializeField] private float _speed = 1f;
-
+    [SerializeField] private float _speed;
+    
     private Rigidbody2D _rigidbody2D;
+    private Queue<Ray2D> _reflectPoints;
     private Vector2 _lastFrameVelocity;
     public Rigidbody2D Rigidbody2D => _rigidbody2D;
     public float Speed => _speed;
-
+        
     protected void Awake()
     {
         _rigidbody2D = gameObject.GetComponent<Rigidbody2D>();
@@ -24,9 +26,19 @@ public class Bullet : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D col)
     {
         if (col.gameObject.CompareTag("Wall"))
-            ReflectBullet(col.GetContact(0).normal);
+        {
+            ReflectBullet();
+        }
+           
+        if (col.gameObject.CompareTag("Player"))
+        {
+            this.gameObject.SetActive(false);
+        }
+            
+        if(col.gameObject.CompareTag("Bullet"))
+            gameObject.SetActive(false);
     }
-
+    
     protected void OnBecameInvisible()
     {
         this.gameObject.SetActive(false);
@@ -36,15 +48,20 @@ public class Bullet : MonoBehaviour
     {
         transform.position = firePosition.position;
         transform.rotation = firePosition.rotation;
-        _rigidbody2D.AddForce(firePosition.up * Speed, ForceMode2D.Impulse);
+        _rigidbody2D.velocity = firePosition.up *_speed;
+        _reflectPoints=ReflectTrajectory.Reflect(firePosition.position, firePosition.up);
     }
 
-    private void ReflectBullet(Vector2 inNormal)
+    private void ReflectBullet()
     {
-        var newDirection = Vector2.Reflect(_lastFrameVelocity.normalized, inNormal);
-        var angle = Mathf.Atan2(newDirection.y, newDirection.x) * Mathf.Rad2Deg - 90f;
-        _rigidbody2D.velocity = newDirection * _speed;
-        _rigidbody2D.rotation = angle;
+        if (_reflectPoints.TryDequeue(out var ray))
+        {
+            _rigidbody2D.velocity = ray.direction * _speed;
+            _rigidbody2D.position = ray.origin;
+            var angle = Mathf.Atan2(ray.direction.y ,ray.direction.x) * Mathf.Rad2Deg-90f;
+            _rigidbody2D.rotation = angle;
+            Debug.Log("Pos:"+ray.origin);
+        }
     }
     
 }

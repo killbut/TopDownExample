@@ -1,50 +1,40 @@
-﻿using System;
-using UnityEditor;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-public class BulletTrajectoryRender : MonoBehaviour
+public class BulletTrajectoryRender : MonoBehaviour, IRenderTrajectory
 {
-    [SerializeField] private Transform _startTransform;
-    
     private LineRenderer _lineRenderer;
-    private int _maxCountReflect = 10;
-    private Vector3[] _pointsReflect;
+    private List<Vector3> _points = new List<Vector3>();
     private void Start()
     {
          _lineRenderer=GetComponent<LineRenderer>();
-         _pointsReflect = new Vector3[_maxCountReflect];
-         _lineRenderer.positionCount = _maxCountReflect;
     }
 
-    public void ShowTrajectory()
+    private void OnEnable()
     {
-        _lineRenderer.SetPositions(_pointsReflect);
+        EventBus.Subscribe(this);
     }
 
-    private void Update()
+    private void OnDisable()
     {
-        if (Input.GetMouseButton(1))
+        EventBus.Unsubscribe(this);
+    }
+    
+    public void ShowTrajectory(Transform startPos)
+    {
+        var queue = ReflectTrajectory.Reflect(startPos.position, startPos.up);
+        _lineRenderer.positionCount = queue.Count+1;
+        _lineRenderer.SetPosition(0,startPos.position);
+        for (int i = 1; i <_lineRenderer.positionCount; i++)
         {
-            ReflectRay(_startTransform.position,_startTransform.up,0);
-            ShowTrajectory();
+            var point = queue.Dequeue();
+            _lineRenderer.SetPosition(i,point.origin);
         }
     }
-
-    private void ReflectRay(Vector2 startPos,Vector2 direction,int count)
+    // TODO if reflect to infinity space
+    public void CleanupTrajectory()
     {
-        Ray2D ray = new Ray2D(startPos, direction);
-        var hit = Physics2D.Raycast(ray.origin, ray.direction);
-        if (hit.collider.CompareTag("Wall") && count<_maxCountReflect)
-        {
-            _pointsReflect[count] = ray.origin;
-            count++;
-            // TODO fix delta
-
-
-            ray.direction = Vector2.Reflect(ray.direction, hit.normal);
-            ray.origin = hit.point + ray.direction * 0.1f;
-            ReflectRay(ray.origin,ray.direction ,count);
-        }
-        //EditorApplication.isPaused = true;
+        _lineRenderer.positionCount = 0;
     }
 }

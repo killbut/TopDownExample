@@ -25,9 +25,9 @@ public class PoolManager : MonoBehaviour, IBulletPoolObjectHandler
           _bulletPoolObject = new PoolObject<Bullet>(_prefab, _needAutoExpand, _container, _startSize);
      }
      
-     public void TakeFreeBullet(Transform firePosition)
+     public Bullet TakeFreeBullet()
      {
-          var bullet = _bulletPoolObject.GetFreeObject(); 
-          bullet.Shot(firePosition);
+          var bullet = _bulletPoolObject.GetFreeObject();
+          return bullet;
      }
 }

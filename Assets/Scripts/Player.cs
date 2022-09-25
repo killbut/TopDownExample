@@ -17,8 +17,10 @@ public class Player :  Movement
     {
         if(Input.GetMouseButtonDown(0))
             new ShotCommand(_firePosition).Execute();
-        if(Input.GetMouseButtonDown(1))
+        if(Input.GetMouseButton(1))
             EventBus.RaiseEvent<IRenderTrajectory>(x=>x.ShowTrajectory(_firePosition));
+        if(Input.GetMouseButtonUp(1))
+            EventBus.RaiseEvent<IRenderTrajectory>(x=>x.CleanupTrajectory());
         _movementVector = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
         _mousePosition = _camera.ScreenToWorldPoint(Input.mousePosition);
     }
@@ -26,7 +28,7 @@ public class Player :  Movement
     protected void FixedUpdate()
     {
         new MovementCommand(this, _movementVector).Execute();
-        new RotatingCommand(this,_mousePosition).Execute();
+        new AimCommand(this,_mousePosition).Execute();
     }
 
 
