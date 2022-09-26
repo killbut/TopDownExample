@@ -23,7 +23,7 @@ public class BulletTrajectoryRender : MonoBehaviour, IRenderTrajectory
     
     public void ShowTrajectory(Transform startPos)
     {
-        var queue = ReflectTrajectory.Reflect(startPos.position, startPos.up);
+        var queue = ReflectPoints.Reflect(startPos.position, startPos.up);
         _lineRenderer.positionCount = queue.Count+1;
         _lineRenderer.SetPosition(0,startPos.position);
         for (int i = 1; i <_lineRenderer.positionCount; i++)

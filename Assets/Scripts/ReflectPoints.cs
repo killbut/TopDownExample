@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using UnityEditor.UIElements;
 using UnityEngine;
 
-public static class ReflectTrajectory
+public class ReflectPoints
 {
     private const int MAX_REFLECTION = 100;
     private const int RAY_LENGHT = 50;
@@ -9,12 +11,12 @@ public static class ReflectTrajectory
     {
         Queue<Ray2D> rays = new Queue<Ray2D>();
         Ray2D ray = new Ray2D(startPos,directionPos);
-        RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction,Mathf.Infinity,LayerMask.GetMask("Walls"));
+        RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
         for (int count = 0; count < MAX_REFLECTION ;count++)
         {
             if (hit.collider != null)
             {
-                if (hit.collider.CompareTag("Wall"))
+                if (hit.transform.gameObject.layer==LayerMask.NameToLayer("Walls"))
                 {
                     ray.direction = Vector2.Reflect(ray.direction, hit.normal);
                     ray.origin = hit.point + ray.direction * 0.1f;
@@ -22,18 +24,18 @@ public static class ReflectTrajectory
                     ray = new Ray2D(ray.origin, ray.direction);
                     hit = Physics2D.Raycast(ray.origin, ray.direction);
                 }
-                else if (hit.collider.CompareTag("Player"))
+                else if (hit.transform.gameObject.layer==LayerMask.NameToLayer("Destroyable"))
                 {
                     ray.origin = hit.point;
                     rays.Enqueue(ray);
-                    break;
+                    return rays;
                 }
             }
             else
             {
                 ray.origin += ray.direction * RAY_LENGHT;
                 rays.Enqueue(ray);
-                break;
+                return rays;
             }
         }
         return rays;

@@ -25,18 +25,11 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D col)
     {
-        if (col.gameObject.CompareTag("Wall"))
-        {
+        if(col.gameObject.layer==LayerMask.NameToLayer("Walls"))
             ReflectBullet();
-        }
+        
            
-        if (col.gameObject.CompareTag("Player"))
-        {
-            this.gameObject.SetActive(false);
-        }
-            
-        if(col.gameObject.CompareTag("Bullet"))
-            gameObject.SetActive(false);
+
     }
     
     protected void OnBecameInvisible()
@@ -49,7 +42,7 @@ public class Bullet : MonoBehaviour
         transform.position = firePosition.position;
         transform.rotation = firePosition.rotation;
         _rigidbody2D.velocity = firePosition.up *_speed;
-        _reflectPoints=ReflectTrajectory.Reflect(firePosition.position, firePosition.up);
+        _reflectPoints=ReflectPoints.Reflect(firePosition.position, firePosition.up);
     }
 
     private void ReflectBullet()
