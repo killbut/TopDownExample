@@ -117,7 +117,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _firePosition: {fileID: 5785936192222454266}
-  _speed: 5
+  _setting: {fileID: 0}
+  _distanceToPlayer: 0
 --- !u!1 &5094619717232811401
 GameObject:
   m_ObjectHideFlags: 0

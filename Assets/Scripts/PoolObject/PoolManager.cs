@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class PoolManager : MonoBehaviour, IBulletPoolObjectHandler
+public class PoolManager : MonoBehaviour
 {
      [SerializeField] private Bullet _prefab;
      [SerializeField] private int _startSize = 10;
@@ -8,16 +8,14 @@ public class PoolManager : MonoBehaviour, IBulletPoolObjectHandler
      [SerializeField] private Transform _container;
 
      private PoolObject<Bullet> _bulletPoolObject;
-     public PoolObject<Bullet> BulletPoolObject => _bulletPoolObject;
+     private static PoolManager _instance;
 
-     protected void OnEnable()
-     {
-          EventBus.Subscribe(this);
-     }
+     public static PoolManager Instance => _instance;
+     
 
-     protected void OnDisable()
+     private void Awake()
      {
-          EventBus.Subscribe(this);
+          _instance = this;
      }
 
      protected void Start()

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using Vector2 = UnityEngine.Vector2;
 
 [RequireComponent(typeof(Rigidbody2D))]
 public class Bullet : MonoBehaviour
@@ -9,7 +8,6 @@ public class Bullet : MonoBehaviour
     
     private Rigidbody2D _rigidbody2D;
     private Queue<Ray2D> _reflectPoints;
-    private Vector2 _lastFrameVelocity;
     public Rigidbody2D Rigidbody2D => _rigidbody2D;
     public float Speed => _speed;
         
@@ -17,19 +15,11 @@ public class Bullet : MonoBehaviour
     {
         _rigidbody2D = gameObject.GetComponent<Rigidbody2D>();
     }
-
-    private void Update()
-    {
-        _lastFrameVelocity = _rigidbody2D.velocity;
-    }
-
+    
     private void OnCollisionEnter2D(Collision2D col)
     {
         if(col.gameObject.layer==LayerMask.NameToLayer("Walls"))
             ReflectBullet();
-        
-           
-
     }
     
     protected void OnBecameInvisible()
@@ -53,8 +43,6 @@ public class Bullet : MonoBehaviour
             _rigidbody2D.position = ray.origin;
             var angle = Mathf.Atan2(ray.direction.y ,ray.direction.x) * Mathf.Rad2Deg-90f;
             _rigidbody2D.rotation = angle;
-            Debug.Log("Pos:"+ray.origin);
         }
     }
-    
 }

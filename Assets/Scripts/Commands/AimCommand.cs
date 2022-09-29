@@ -4,9 +4,9 @@ public class AimCommand : ICommand
     private readonly Rigidbody2D _rigidbody2D;
     private readonly float _angle;
 
-    public AimCommand(IMovable movement, float angle)
+    public AimCommand(Rigidbody2D rigidbody2D, float angle)
     {
-        _rigidbody2D = movement.Rigidbody2D;
+        _rigidbody2D = rigidbody2D;
         _angle = angle;
     }
     
@@ -14,7 +14,8 @@ public class AimCommand : ICommand
     {
         if (_rigidbody2D != null)
         {
-            _rigidbody2D.rotation = _angle;
+            _rigidbody2D.SetRotation(_angle);
+            //_rigidbody2D.rotation = _angle;
         }
     }
 }

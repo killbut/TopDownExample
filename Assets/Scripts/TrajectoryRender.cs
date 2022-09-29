@@ -1,24 +1,22 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class BulletTrajectoryRender : MonoBehaviour, IRenderTrajectory
+public class TrajectoryRender : MonoBehaviour
 {
     private LineRenderer _lineRenderer;
     private List<Vector3> _points = new List<Vector3>();
+    private static TrajectoryRender _instance;
+    public static TrajectoryRender Instance => _instance;
+
+    protected void Awake()
+    {
+        _instance = this;
+    }
+
     private void Start()
     {
-         _lineRenderer=GetComponent<LineRenderer>();
-    }
-
-    private void OnEnable()
-    {
-        EventBus.Subscribe(this);
-    }
-
-    private void OnDisable()
-    {
-        EventBus.Unsubscribe(this);
+        _lineRenderer=GetComponent<LineRenderer>();
     }
     
     public void ShowTrajectory(Transform startPos)
@@ -32,7 +30,6 @@ public class BulletTrajectoryRender : MonoBehaviour, IRenderTrajectory
             _lineRenderer.SetPosition(i,point.origin);
         }
     }
-    // TODO if reflect to infinity space
     public void CleanupTrajectory()
     {
         _lineRenderer.positionCount = 0;
