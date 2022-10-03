@@ -1,14 +1,23 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class ReflectPoints
+public class ReflectPoints 
 {
     private const int MAX_REFLECTION = 100;
     private const int RAY_LENGHT = 50;
-    public static Queue<Ray2D> Reflect(Vector2 startPos, Vector2 directionPos)
+    
+    private readonly Vector2 _startPos;
+    private readonly Vector2 _direction;
+    
+    public ReflectPoints(Vector2 startPos, Vector2 directionPos)
+    {
+        _startPos = startPos;
+        _direction = directionPos;
+    }
+    public Queue<Ray2D> Reflect()
     {
         Queue<Ray2D> rays = new Queue<Ray2D>();
-        Ray2D ray = new Ray2D(startPos,directionPos);
+        Ray2D ray = new Ray2D(_startPos,_direction);
         RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
         for (int count = 0; count < MAX_REFLECTION ;count++)
         {
@@ -36,7 +45,7 @@ public class ReflectPoints
                 return rays;
             }
         }
+
         return rays;
     }
-
 }

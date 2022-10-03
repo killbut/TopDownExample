@@ -1,93 +1,86 @@
 ﻿using System.Collections;
 using System.Linq;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
+[RequireComponent(typeof(Rigidbody2D))]
 public class EnemyAI : Person
 {
-    [SerializeField] private float _distanceToPlayer;
+    private const float DELTA_POSITIONS = 0.2f;
     private Rigidbody2D _rigidbody2D;
-    private Vector2 _position;
+    private GridNodes _grid;
     private Transform _transform;
-    private Transform _target;
-    private float _nextCyclePoint;
-    private float _angle;
+    private Vector2 _endPoint;
+    private Vector2[] _path;
+    private bool _needPath;
+    private Ray2D[] _rays;
+    private float _nextCycleShot;
 
     protected void Awake()
     {
         _rigidbody2D = GetComponent<Rigidbody2D>();
+        _grid = FindObjectOfType<GridNodes>();
         _transform = transform;
-        _target = FindObjectOfType<Player>().transform;
     }
 
     protected void Start()
     {
         base.Init();
-        StartCoroutine(A());
+        GetPath();
+        StartCoroutine(MovingToPath());
     }
 
-    private IEnumerator A()
+    private void GetPath()
     {
+        var randomNode = _grid.GetRandomNode();
+        _path = _grid.Pathfinding.FindPath(_transform.position, randomNode.WorldPosition);
+    }
+
+    private IEnumerator MovingToPath()
+    {
+        int index = 0;
+        Vector2 currentWaypoint = _path[index];
         while (true)
         {
-            var targetPos = GetRandomNode();
-            new Pathfinding(GridNode.Instance).FindPath(transform.position,targetPos);
-            if(GridNode.Instance.Path!=null)
+            if (Vector2.Distance(_transform.position, currentWaypoint) < DELTA_POSITIONS)
             {
-                var path = GridNode.Instance.Path;
-                for (int i = 0; i < path.Count; i++)
+                index++;
+                if (index >= _path.Length)
                 {
-                    var pos = path[i].WorldPosition;
-                    new MovingCommand(pos*Setting.Speed*Time.fixedDeltaTime,_rigidbody2D).Execute();
-                    yield return new WaitForFixedUpdate();
+                    index = 0;
+                    GetPath();
+                    yield return null;
+                    continue;
+                }
+
+                currentWaypoint = _path[index];
+                
+            }
+
+            var moveTowards = Vector2.MoveTowards(_rigidbody2D.position, currentWaypoint,
+                Setting.Speed * Time.fixedDeltaTime);
+            _rigidbody2D.MovePosition(moveTowards); // TODO spline path
+
+            var direction = (currentWaypoint - _rigidbody2D.position).normalized;
+            var rotateTowards = Vector3.RotateTowards(_transform.up, direction, 3 * Time.fixedDeltaTime, 0);
+            _rigidbody2D.SetRotation(Quaternion.LookRotation(_transform.forward, rotateTowards));
+
+            yield return new WaitForFixedUpdate();
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        var rays = new ReflectPoints(Fireposition.position, Fireposition.up).Reflect();
+        var lastRay = rays.Last();
+        var hit = Physics2D.OverlapCircle(lastRay.origin, 0.3f);
+        if (hit != null)
+            if (hit.gameObject.CompareTag("Player"))
+            {
+                if (Time.time > _nextCycleShot)
+                {
+                    _nextCycleShot = Time.time + Setting.Firerate;
+                    new ShotCommand(Fireposition).Execute();
                 }
             }
-        }
-    }
-
-    private Vector2 GetRandomNode()
-    {
-        while (true)
-        {
-            var x = Random.Range(0, GridNode.Instance.SizeX);
-            var y = Random.Range(0, GridNode.Instance.SizeY);
-            var node = GridNode.Instance.Grid[x, y];
-            if (node.Walkable)
-                return node.WorldPosition;
-        }
-    }
-    protected void FixedUpdate()
-    {
-       // if (CheckTrajectoryToPlayer())
-           // new ShotCommand(Fireposition,Setting.Firerate);
-       //
-       // new AimCommand(_rigidbody2D, _angle).Execute();
-    }
-    private void CreatePointToMove()
-    {
-       
-        // if (Vector2.Distance(_transform.position, _target.position) > _distanceToPlayer)
-        // {
-        //     var direction =  _target.position - _transform.position;
-        //     _position = direction.normalized * (Setting.Speed * Time.fixedDeltaTime);
-        //     _angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg-90f;
-        // }
-        // else
-        // {
-        //     _angle = 0;
-        // }
-
-    }
-    private bool CheckTrajectoryToPlayer()
-    {
-        var rays = ReflectPoints.Reflect(transform.position, transform.up);
-        if (rays.Count > 0)
-        {
-            var lastRay = rays.Last();
-            if (Physics2D.OverlapPoint(lastRay.origin).CompareTag("Player"))
-                return true;
-        }
-        return false;
     }
 }

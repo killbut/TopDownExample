@@ -1,7 +1,9 @@
-﻿    using System;
-    using System.Collections.Generic;
-    using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
+namespace PoolObject
+{
     public class PoolObject<T> where T : MonoBehaviour
     {
         private T _prefab;
@@ -75,3 +77,4 @@
             }
         }
     }
+}

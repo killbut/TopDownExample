@@ -4,7 +4,7 @@ public class MovingCommand : ICommand
 {
     private readonly Rigidbody2D _rigidbody2D;
     private Vector2 _direction;
-    public MovingCommand(Vector2 direction, Rigidbody2D rigidbody2D)
+    public MovingCommand(Rigidbody2D rigidbody2D,Vector2 direction)
     {
         _rigidbody2D = rigidbody2D;
         _direction = direction;

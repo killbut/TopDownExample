@@ -1,10 +1,10 @@
-﻿using UnityEngine;
+﻿using PoolObject;
+using UnityEditor;
+using UnityEngine;
 
 public class ShotCommand : ICommand
 {
     private readonly Transform _firePosition;
-
-    private float _cycleShot;
     
     public ShotCommand(Transform firePosition)
     {

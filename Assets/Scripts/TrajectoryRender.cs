@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class TrajectoryRender : MonoBehaviour
 {
     private LineRenderer _lineRenderer;
-    private List<Vector3> _points = new List<Vector3>();
     private static TrajectoryRender _instance;
     public static TrajectoryRender Instance => _instance;
 
@@ -21,13 +18,14 @@ public class TrajectoryRender : MonoBehaviour
     
     public void ShowTrajectory(Transform startPos)
     {
-        var queue = ReflectPoints.Reflect(startPos.position, startPos.up);
-        _lineRenderer.positionCount = queue.Count+1;
+        var rays = new ReflectPoints(startPos.position, startPos.up).Reflect();
+        _lineRenderer.positionCount = rays.Count+1;
         _lineRenderer.SetPosition(0,startPos.position);
-        for (int i = 1; i <_lineRenderer.positionCount; i++)
+        int index = 1;
+        foreach (var ray in rays)
         {
-            var point = queue.Dequeue();
-            _lineRenderer.SetPosition(i,point.origin);
+            _lineRenderer.SetPosition(index,ray.origin);
+            index++;
         }
     }
     public void CleanupTrajectory()

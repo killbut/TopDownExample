@@ -4,16 +4,18 @@ public class TrajectoryCommand : ICommand
 {
     private readonly Transform _startPosition;
     private readonly bool _needClearTrajectory;
-    public TrajectoryCommand(Transform startPosition,bool clear)
+    private readonly TrajectoryRender _instance;
+    public TrajectoryCommand(TrajectoryRender instance,Transform startPosition,bool clear)
     {
         _startPosition = startPosition;
         _needClearTrajectory = clear;
+        _instance = instance;
     }
     public void Execute()
     {
-        if(!_needClearTrajectory)
-            TrajectoryRender.Instance.ShowTrajectory(_startPosition);
+        if (!_needClearTrajectory)
+            _instance.ShowTrajectory(_startPosition);
         else
-            TrajectoryRender.Instance.CleanupTrajectory();
+            _instance.CleanupTrajectory();
     }
 }
