@@ -6,12 +6,11 @@
 public class InputHandler : MonoBehaviour
 {
     private Rigidbody2D _rigidbody2D;
-    private CircleCollider2D _circleCollider2D;
     private Camera _camera;
     private float _rotationAngle;
     private Vector2 _movingDirection;
     private Transform _fireposition;
-    private SettingPerson _setting;
+    private Persons _setting;
     private float _nextShotTime;
     
     private bool _isShot;
@@ -31,7 +30,6 @@ public class InputHandler : MonoBehaviour
         _fireposition = player.Fireposition;
         _setting = player.Setting;
         _rigidbody2D = GetComponent<Rigidbody2D>();
-        _circleCollider2D = GetComponent<CircleCollider2D>();
         _camera = Camera.main;
         _trajectoryInstance = FindObjectOfType<TrajectoryRender>();
     }

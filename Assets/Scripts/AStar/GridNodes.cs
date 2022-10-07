@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
-[ExecuteInEditMode]
 public class GridNodes : MonoBehaviour
 {
     [SerializeField] private Vector2 _gridWorldSize;
@@ -14,9 +11,6 @@ public class GridNodes : MonoBehaviour
     public int SizeX { get; private set; }
     public int SizeY { get; private set; }
     public Node[,] Grid { get; private set; }
-    public  Vector2[]  Path { get; private set; }
-    public Pathfinding Pathfinding { get; private set; }
-    
     
     protected void Awake()
     {
@@ -24,13 +18,6 @@ public class GridNodes : MonoBehaviour
         SizeX = Mathf.RoundToInt(_gridWorldSize.x / _nodeDiameter);
         SizeY = Mathf.RoundToInt(_gridWorldSize.y / _nodeDiameter);
         CreateGrid();
-        Pathfinding = new Pathfinding(this);
-        Pathfinding.OnPathfinded += SetPath;
-    }
-    
-    private void SetPath( Vector2[]  obj)
-    {
-        Path = obj;
     }
     
     private void CreateGrid()
@@ -44,21 +31,9 @@ public class GridNodes : MonoBehaviour
             {
                 var worldPoint = worldBottomLeft + Vector2.right * (x * _nodeDiameter + _nodeRadius) +
                                  Vector2.up * (y * _nodeDiameter + _nodeRadius);
-                //bool walkable = !Physics2D.OverlapCircle(worldPoint, _nodeRadius, _unwalkableLayer);
-                bool walkable = !Physics2D.OverlapBox(worldPoint, new Vector2(_nodeRadius, _nodeRadius), 0,
-                    _unwalkableLayer);
+                bool walkable = !Physics2D.OverlapCircle(worldPoint, _nodeRadius, _unwalkableLayer);
                 Grid[x, y] = new Node(x, y, worldPoint, walkable);
             }
-        }
-    }
-    public Node GetRandomNode(bool walkable = true)
-    {
-        while (true)
-        {
-            int x = Random.Range(0, SizeX );
-            int y = Random.Range(0, SizeY );
-            if (Grid[x, y].Walkable == walkable)
-                return Grid[x, y];
         }
     }
     public Node NodeFromWorldPoint(Vector2 worldPos)
@@ -100,9 +75,6 @@ public class GridNodes : MonoBehaviour
                 foreach (var node in Grid)
                 {
                     Gizmos.color = node.Walkable ? Color.green : Color.red;
-                    if(Path!=null)
-                        if(Path.Contains(node.WorldPosition))
-                            Gizmos.color=Color.blue;
                     var color = Gizmos.color;
                     color.a = 0.4f;
                     Gizmos.color = color;

@@ -14,7 +14,7 @@ public class Node
     public Node(int x, int y, Vector2 worldPosition, bool walkable)
     {
         X = x;
-        this.Y = y;
+        Y = y;
         WorldPosition = worldPosition;
         Walkable = walkable;
     }

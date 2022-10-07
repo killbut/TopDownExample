@@ -14,7 +14,8 @@ public class ReflectPoints
         _startPos = startPos;
         _direction = directionPos;
     }
-    public Queue<Ray2D> Reflect()
+    
+    public Queue<Ray2D> Reflect(bool bullet=false)
     {
         Queue<Ray2D> rays = new Queue<Ray2D>();
         Ray2D ray = new Ray2D(_startPos,_direction);
@@ -38,7 +39,7 @@ public class ReflectPoints
                     return rays;
                 }
             }
-            else
+            else if(!bullet)
             {
                 ray.origin += ray.direction * RAY_LENGHT;
                 rays.Enqueue(ray);

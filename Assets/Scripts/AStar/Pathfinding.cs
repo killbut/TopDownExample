@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Pathfinding
+public class Pathfinding : MonoBehaviour
 {
+    [SerializeField] private bool _drawGizmos;
     private GridNodes _gridNodes;
-    public event Action<Vector2[]> OnPathfinded;
-
-    public Pathfinding(GridNodes gridNodes)
+    private Vector2[] _path;
+    public event Action<Vector2[]> OnPathfinded; 
+    private void Awake()
     {
-        _gridNodes = gridNodes;
+        _gridNodes = GetComponent<GridNodes>();
     }
 
-    public Vector2[] FindPath(Vector2 startPos, Vector2 endPos)
+    public void FindPath(Vector2 startPos, Vector2 endPos)
     {
         var startNode = _gridNodes.NodeFromWorldPoint(startPos);
         var endNode = _gridNodes.NodeFromWorldPoint(endPos);
@@ -38,9 +39,8 @@ public class Pathfinding
                 closedSet.Add(node);
                 if (node == endNode)
                 {
-                    var path = RetracePath(startNode, endNode);
-                    OnPathfinded?.Invoke(path);
-                    return path;
+                    _path = RetracePath(startNode, endNode);
+                    OnPathfinded?.Invoke(_path);
                 }
 
                 foreach (var neighbour in _gridNodes.GetNeighbours(node))
@@ -59,8 +59,6 @@ public class Pathfinding
                 }
             }
         }
-
-        return null;
     }
 
     private int GetDistance(Node nodeStart, Node nodeEnd)
@@ -87,4 +85,14 @@ public class Pathfinding
         return waypoints;
     }
 
+    public void OnDrawGizmos()
+    {
+        if (_path != null && _drawGizmos)
+        {
+            for (int i = 1; i < _path.Length; i++)
+            {
+                Gizmos.DrawLine(_path[i-1],_path[i]);
+            }
+        }
+    }
 }

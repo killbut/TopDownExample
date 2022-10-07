@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Person Setting", menuName = "Settings/Person", order = 0)]
-public class SettingPerson : ScriptableObject
+public class Persons : ScriptableObject
 {
     [SerializeField] private float _firerate;
     [SerializeField] private float _speed;

@@ -3,9 +3,9 @@
 public class Person : MonoBehaviour
 {
     [SerializeField] private Transform _firePosition;
-    [SerializeField] private SettingPerson _setting;
+    [SerializeField] private Persons _setting;
     public Transform Fireposition => _firePosition;
-    public SettingPerson Setting => _setting;
+    public Persons Setting => _setting;
     
     protected void Init()
     {
